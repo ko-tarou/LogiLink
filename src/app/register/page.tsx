@@ -55,6 +55,12 @@ export default function RegisterPage() {
         return
       }
 
+      if (!data.user) {
+        toast.error("ユーザー情報の取得に失敗しました")
+        setIsSubmitting(false)
+        return
+      }
+
       // ユーザー情報（会社名、会社タイプ）を`companies`テーブルに保存
       const { data: userData, error: dbError } = await supabase
         .from("companies")
