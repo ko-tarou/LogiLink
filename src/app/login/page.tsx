@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { toast } from "sonner"
 import Link from "next/link"
@@ -10,13 +9,14 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Truck, ArrowLeft } from "lucide-react"
+import { supabase } from "@/lib/supabase" // Supabaseクライアントのインポート
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
 
@@ -33,14 +33,33 @@ export default function LoginPage() {
       return
     }
 
-    // ログイン処理（実際にはAPIリクエストなど）
-    setTimeout(() => {
+    try {
+      // Supabaseでログイン処理
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+
+      if (error) {
+        toast.error(error.message)
+        setIsSubmitting(false)
+        return
+      }
+
+      // ログイン成功
       toast.success("ログインしました", {
         description: "ダッシュボードに移動します",
       })
+
+      // ログイン後、ダッシュボードにリダイレクト
+      setTimeout(() => {
+        window.location.href = "/dashboard" // ダッシュボードページにリダイレクト
+      }, 1500)
+
+    } catch (error) {
+      toast.error("ログイン中にエラーが発生しました")
       setIsSubmitting(false)
-      // 実際の実装では、ここでダッシュボードにリダイレクトする
-    }, 1500)
+    }
   }
 
   return (
@@ -103,4 +122,3 @@ export default function LoginPage() {
     </div>
   )
 }
-

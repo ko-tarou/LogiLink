@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { toast } from "sonner"
 import Link from "next/link"
@@ -11,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Truck, ArrowLeft } from "lucide-react"
+import { supabase } from "@/lib/supabase"
 
 export default function RegisterPage() {
   const [companyType, setCompanyType] = useState<string>("sales")
@@ -19,7 +19,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
 
@@ -42,14 +42,50 @@ export default function RegisterPage() {
       return
     }
 
-    // 登録処理（実際にはAPIリクエストなど）
-    setTimeout(() => {
+    try {
+      // Supabaseでユーザー登録
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      })
+
+      if (error) {
+        toast.error(error.message)
+        setIsSubmitting(false)
+        return
+      }
+
+      // ユーザー情報（会社名、会社タイプ）を`companies`テーブルに保存
+      const { data: userData, error: dbError } = await supabase
+        .from("companies")
+        .insert([
+          {
+            company_name: companyName,
+            company_type: companyType,
+            email: email,
+            user_id: data.user.id,
+          },
+        ])
+
+      if (dbError) {
+        toast.error("会社情報の保存に失敗しました")
+        setIsSubmitting(false)
+        return
+      }
+
       toast.success("登録が完了しました", {
         description: "ログイン画面に移動します",
       })
+
+      // ログインページへリダイレクト
+      setTimeout(() => {
+        window.location.href = "/login" // ログインページにリダイレクト
+      }, 1500)
+
+    } catch (error) {
+      toast.error("登録中にエラーが発生しました")
       setIsSubmitting(false)
-      // 実際の実装では、ここでログインページにリダイレクトする
-    }, 1500)
+    }
   }
 
   return (
@@ -132,4 +168,3 @@ export default function RegisterPage() {
     </div>
   )
 }
-
