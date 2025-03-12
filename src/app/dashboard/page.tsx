@@ -8,8 +8,8 @@ import { SupplyChainFlow } from "@/components/supply-chain-flow"
 import { ChatList } from "@/components/chat-list"
 import { OrderForm } from "@/components/order-form"
 
-export default function DashboardPage() {
-  return (
+export default function DashboardPage() {  
+  return(
     <div className="flex min-h-screen flex-col">
       <DashboardHeader />
       <div className="flex flex-1">
@@ -28,6 +28,24 @@ export default function DashboardPage() {
               </Button>
             </div>
           </div>
+          {/* 🔹 検索 & 絞り込み UI を追加 */}
+        <div className="flex gap-2 mb-6">
+          {/* 検索入力欄 */}
+          <input
+            type="text"
+            placeholder="会社名を検索..."
+            className="border p-2 rounded w-64"
+          />
+
+          {/* 絞り込みボタン */}
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm">すべて</Button>
+            <Button variant="outline" size="sm">配送</Button>
+            <Button variant="outline" size="sm">材料</Button>
+            <Button variant="outline" size="sm">販売</Button>
+            <Button variant="outline" size="sm">製造</Button>
+          </div>
+        </div>
           <Tabs defaultValue="overview">
             <TabsList className="mb-4">
               <TabsTrigger value="overview">概要</TabsTrigger>
@@ -231,6 +249,5 @@ export default function DashboardPage() {
         </main>
       </div>
     </div>
-  )
+    )
 }
-
