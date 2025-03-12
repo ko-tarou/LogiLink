@@ -77,6 +77,8 @@ export function SupplyChainFlow() {
     }
   }
 
+  const categories = ["materials", "manufacturing", "sales"] as const
+
   return (
     <div className="space-y-6">
       {/* フィルタリングボタン */}
@@ -88,7 +90,7 @@ export function SupplyChainFlow() {
 
       {/* 企業リスト */}
       <div className="flex flex-col items-center space-y-4 md:flex-row md:justify-between md:space-y-0">
-        {["materials", "manufacturing", "sales"].map((category) => (
+        {categories.map((category) => (
           <div key={category} className="w-full md:w-1/3 space-y-2">
             <h3 className="text-center font-medium">
               {category === "materials" ? "材料サプライヤー" : category === "manufacturing" ? "製造会社" : "販売会社"}
