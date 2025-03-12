@@ -35,7 +35,7 @@ export default function LoginPage() {
 
     try {
       // Supabaseでログイン処理
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
@@ -57,6 +57,7 @@ export default function LoginPage() {
       }, 1500)
 
     } catch (error) {
+      console.error(error);
       toast.error("ログイン中にエラーが発生しました")
       setIsSubmitting(false)
     }

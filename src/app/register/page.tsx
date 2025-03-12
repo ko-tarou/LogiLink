@@ -62,7 +62,7 @@ export default function RegisterPage() {
       }
 
       // ユーザー情報（会社名、会社タイプ）を`companies`テーブルに保存
-      const { data: userData, error: dbError } = await supabase
+      const { error: dbError } = await supabase
         .from("companies")
         .insert([
           {
@@ -89,6 +89,7 @@ export default function RegisterPage() {
       }, 1500)
 
     } catch (error) {
+      console.error("登録エラー:", error)
       toast.error("登録中にエラーが発生しました")
       setIsSubmitting(false)
     }

@@ -5,7 +5,7 @@ import { toast } from "sonner"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Package, Factory, Truck, Send } from "lucide-react"
+import { Send } from "lucide-react"
 
 // サンプルデータ
 const chatData = [
@@ -71,19 +71,6 @@ const messageData = [
 export function ChatList() {
   const [selectedChat, setSelectedChat] = useState<number | null>(1)
   const [message, setMessage] = useState("")
-
-  const getIconForType = (type: string) => {
-    switch (type) {
-      case "materials":
-        return <Package className="h-5 w-5" />
-      case "manufacturing":
-        return <Factory className="h-5 w-5" />
-      case "sales":
-        return <Truck className="h-5 w-5" />
-      default:
-        return null
-    }
-  }
 
   const getColorForType = (type: string) => {
     switch (type) {
