@@ -5,7 +5,7 @@ import { toast } from "sonner"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Package, Factory, Truck, Send } from "lucide-react"
+import { Send } from "lucide-react"
 
 // サンプルデータ
 const chatData = [

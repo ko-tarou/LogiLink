@@ -57,6 +57,7 @@ export default function LoginPage() {
       }, 1500)
 
     } catch (error) {
+      console.error(error);
       toast.error("ログイン中にエラーが発生しました")
       setIsSubmitting(false)
     }

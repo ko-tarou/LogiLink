@@ -39,7 +39,7 @@ export function OrderForm() {
   const [partner, setPartner] = useState("");
   const [orderItems, setOrderItems] = useState<OrderItem[]>([{ id: 1, productId: 1, quantity: 10, notes: "" }]);
   const [deliveryDate, setDeliveryDate] = useState("");
-  const [notes, setNotes] = useState("");
+  const [notes] = useState("");
 
   const addOrderItem = () => {
     const newId = orderItems.length > 0 ? Math.max(...orderItems.map((item) => item.id)) + 1 : 1;
