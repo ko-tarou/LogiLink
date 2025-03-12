@@ -1,29 +1,55 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { createClient } from "@supabase/supabase-js"
 import { Button } from "@/components/ui/button"
 import { Package, Factory, Truck, ArrowRight, MessageSquare } from "lucide-react"
 
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
 // サンプルデータ
-const supplyChainData = {
-  materials: [
-    { id: 1, name: "鈴木材料株式会社", type: "materials" },
-    { id: 2, name: "高橋素材株式会社", type: "materials" },
-    { id: 3, name: "田中原料株式会社", type: "materials" },
-  ],
-  manufacturing: [
-    { id: 4, name: "山田製造株式会社", type: "manufacturing" },
-    { id: 5, name: "伊藤工業株式会社", type: "manufacturing" },
-  ],
-  sales: [
-    { id: 6, name: "佐藤物流株式会社", type: "sales" },
-    { id: 7, name: "渡辺販売株式会社", type: "sales" },
-  ],
-}
+const sampleCompanies = [
+  { id: 1001, company_name: "サンプル材料会社", company_type: "materials", isSample: true },
+  { id: 1002, company_name: "サンプル製造会社", company_type: "manufacturing", isSample: true },
+  { id: 1003, company_name: "サンプル販売会社", company_type: "sales", isSample: true },
+]
 
 export function SupplyChainFlow() {
+  const [companies, setCompanies] = useState<{ id: number; company_name: string; company_type: string; isSample: boolean }[]>([])
   const [selectedCompany, setSelectedCompany] = useState<number | null>(null)
+  const [filter, setFilter] = useState<"all" | "sample" | "supabase">("all")
 
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      const { data, error } = await supabase.from("companies").select("id, company_name, company_type")
+      if (error) {
+        console.error("Error fetching companies:", error)
+        setCompanies(sampleCompanies) // エラー時はサンプルデータのみ
+      } else {
+        setCompanies([...sampleCompanies, ...data.map((c) => ({ ...c, isSample: false }))])
+      }
+    }
+
+    fetchCompanies()
+  }, [])
+
+  // フィルタリングされた企業リスト
+  const filteredCompanies = companies.filter((c) => {
+    if (filter === "sample") return c.isSample
+    if (filter === "supabase") return !c.isSample
+    return true
+  })
+
+  // 企業カテゴリごとに分類
+  const categorizedCompanies = {
+    materials: filteredCompanies.filter((c) => c.company_type === "materials"),
+    manufacturing: filteredCompanies.filter((c) => c.company_type === "manufacturing"),
+    sales: filteredCompanies.filter((c) => c.company_type === "sales"),
+  }
+
+  // アイコン取得関数
   const getIconForType = (type: string) => {
     switch (type) {
       case "materials":
@@ -37,6 +63,7 @@ export function SupplyChainFlow() {
     }
   }
 
+  // 色取得関数
   const getColorForType = (type: string) => {
     switch (type) {
       case "materials":
@@ -52,72 +79,41 @@ export function SupplyChainFlow() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col items-center space-y-4 md:flex-row md:justify-between md:space-y-0">
-        <div className="w-full md:w-1/3 space-y-2">
-          <h3 className="text-center font-medium">材料サプライヤー</h3>
-          <div className="space-y-2">
-            {supplyChainData.materials.map((company) => (
-              <Button
-                key={company.id}
-                variant="outline"
-                className={`w-full justify-start ${selectedCompany === company.id ? "border-blue-500 bg-blue-50" : ""}`}
-                onClick={() => setSelectedCompany(company.id)}
-              >
-                <div className={`mr-2 rounded-full p-1 ${getColorForType(company.type)}`}>
-                  {getIconForType(company.type)}
-                </div>
-                {company.name}
-              </Button>
-            ))}
-          </div>
-        </div>
-        <div className="flex items-center justify-center">
-          <ArrowRight className="h-6 w-6 text-muted-foreground" />
-        </div>
-        <div className="w-full md:w-1/3 space-y-2">
-          <h3 className="text-center font-medium">製造会社</h3>
-          <div className="space-y-2">
-            {supplyChainData.manufacturing.map((company) => (
-              <Button
-                key={company.id}
-                variant="outline"
-                className={`w-full justify-start ${
-                  selectedCompany === company.id ? "border-amber-500 bg-amber-50" : ""
-                }`}
-                onClick={() => setSelectedCompany(company.id)}
-              >
-                <div className={`mr-2 rounded-full p-1 ${getColorForType(company.type)}`}>
-                  {getIconForType(company.type)}
-                </div>
-                {company.name}
-              </Button>
-            ))}
-          </div>
-        </div>
-        <div className="flex items-center justify-center">
-          <ArrowRight className="h-6 w-6 text-muted-foreground" />
-        </div>
-        <div className="w-full md:w-1/3 space-y-2">
-          <h3 className="text-center font-medium">販売会社</h3>
-          <div className="space-y-2">
-            {supplyChainData.sales.map((company) => (
-              <Button
-                key={company.id}
-                variant="outline"
-                className={`w-full justify-start ${
-                  selectedCompany === company.id ? "border-green-500 bg-green-50" : ""
-                }`}
-                onClick={() => setSelectedCompany(company.id)}
-              >
-                <div className={`mr-2 rounded-full p-1 ${getColorForType(company.type)}`}>
-                  {getIconForType(company.type)}
-                </div>
-                {company.name}
-              </Button>
-            ))}
-          </div>
-        </div>
+      {/* フィルタリングボタン */}
+      <div className="flex gap-2">
+        <Button onClick={() => setFilter("all")} variant={filter === "all" ? "default" : "outline"}>すべて</Button>
+        <Button onClick={() => setFilter("sample")} variant={filter === "sample" ? "default" : "outline"}>サンプルのみ</Button>
+        <Button onClick={() => setFilter("supabase")} variant={filter === "supabase" ? "default" : "outline"}>データベースのみ</Button>
       </div>
+
+      {/* 企業リスト */}
+      <div className="flex flex-col items-center space-y-4 md:flex-row md:justify-between md:space-y-0">
+        {["materials", "manufacturing", "sales"].map((category) => (
+          <div key={category} className="w-full md:w-1/3 space-y-2">
+            <h3 className="text-center font-medium">
+              {category === "materials" ? "材料サプライヤー" : category === "manufacturing" ? "製造会社" : "販売会社"}
+            </h3>
+            <div className="space-y-2">
+              {categorizedCompanies[category].map((company) => (
+                <Button
+                  key={company.id}
+                  variant="outline"
+                  className={`w-full justify-start ${selectedCompany === company.id ? "border-blue-500 bg-blue-50" : ""} ${company.isSample ? "opacity-70" : ""}`}
+                  onClick={() => setSelectedCompany(company.id)}
+                >
+                  <div className={`mr-2 rounded-full p-1 ${getColorForType(company.company_type)}`}>
+                    {getIconForType(company.company_type)}
+                  </div>
+                  {company.company_name}
+                  {company.isSample && <span className="ml-2 text-xs text-gray-500">(サンプル)</span>}
+                </Button>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* 選択した企業の詳細情報 */}
       {selectedCompany && (
         <div className="mt-6 rounded-lg border p-4">
           <h3 className="font-medium">企業詳細</h3>
@@ -137,4 +133,3 @@ export function SupplyChainFlow() {
     </div>
   )
 }
-
