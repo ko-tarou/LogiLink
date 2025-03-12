@@ -200,7 +200,7 @@ export default function SettingsPage() {
                   <Label htmlFor="twoFactorAuth">二要素認証</Label>
                   <p className="text-sm text-muted-foreground">ログイン時に追加の認証を要求します。</p>
                 </div>
-                <Switch id="twoFactorAuth" checked={false} onCheckedChange={(checked) => {}} />
+                <Switch id="twoFactorAuth" checked={false} onCheckedChange={() => {}} />
               </div>
 
               {/* <Separator /> */}

@@ -72,19 +72,6 @@ export function ChatList() {
   const [selectedChat, setSelectedChat] = useState<number | null>(1)
   const [message, setMessage] = useState("")
 
-  const getIconForType = (type: string) => {
-    switch (type) {
-      case "materials":
-        return <Package className="h-5 w-5" />
-      case "manufacturing":
-        return <Factory className="h-5 w-5" />
-      case "sales":
-        return <Truck className="h-5 w-5" />
-      default:
-        return null
-    }
-  }
-
   const getColorForType = (type: string) => {
     switch (type) {
       case "materials":
